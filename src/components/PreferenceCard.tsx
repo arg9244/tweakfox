@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, AlertTriangle, AlertCircle } from "lucide-react";
 import type { ParsedPreference } from "../services/parser";
+import { getDescription } from "../data/descriptions";
 
 interface PreferenceCardProps {
   preference: ParsedPreference;
@@ -10,6 +11,9 @@ interface PreferenceCardProps {
 
 export function PreferenceCard({ preference, isSelected, onToggle }: PreferenceCardProps) {
   const [showDetails, setShowDetails] = useState(false);
+
+  // Use curated description if available, otherwise fall back to parsed description
+  const description = getDescription(preference.key, preference.description);
 
   const sourceColors: Record<string, string> = {
     betterfox: "text-[#89b4fa] bg-[#89b4fa]/10",
@@ -42,7 +46,7 @@ export function PreferenceCard({ preference, isSelected, onToggle }: PreferenceC
               {getSourceLabel(preference.source)}
             </span>
           </div>
-          <p className="text-[#a6adc8] text-sm leading-relaxed">{preference.description}</p>
+          <p className="text-[#a6adc8] text-sm leading-relaxed">{description}</p>
           {preference.notes.length > 0 && (
             <p className="text-[#6c7086] text-xs mt-1 italic">
               {preference.notes[0]}
