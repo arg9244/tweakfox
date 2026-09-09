@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { ChevronDown, AlertTriangle, AlertCircle } from "lucide-react";
-import type { Preference } from "../data/preferences";
+import type { ParsedPreference } from "../services/parser";
 
 interface PreferenceCardProps {
-  preference: Preference;
+  preference: ParsedPreference;
   isSelected: boolean;
   onToggle: () => void;
 }
@@ -11,16 +11,15 @@ interface PreferenceCardProps {
 export function PreferenceCard({ preference, isSelected, onToggle }: PreferenceCardProps) {
   const [showDetails, setShowDetails] = useState(false);
 
-  const riskColors = {
-    low: "text-[#a6e3a1] bg-[#a6e3a1]/10 border-[#a6e3a1]/20",
-    medium: "text-[#f9e2af] bg-[#f9e2af]/10 border-[#f9e2af]/20",
-    high: "text-[#f38ba8] bg-[#f38ba8]/10 border-[#f38ba8]/20",
-  };
-
-  const sourceColors = {
+  const sourceColors: Record<string, string> = {
     betterfox: "text-[#89b4fa] bg-[#89b4fa]/10",
     arkenfox: "text-[#cba6f7] bg-[#cba6f7]/10",
-    both: "text-[#94e2d5] bg-[#94e2d5]/10",
+  };
+
+  const getSourceLabel = (source: string) => {
+    if (source.toLowerCase().includes("betterfox")) return "Betterfox";
+    if (source.toLowerCase().includes("arkenfox")) return "arkenfox";
+    return source;
   };
 
   return (
@@ -32,22 +31,23 @@ export function PreferenceCard({ preference, isSelected, onToggle }: PreferenceC
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <h3 className="font-medium text-[#cdd6f4] text-sm">{preference.name}</h3>
-            {preference.risk && (
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border ${riskColors[preference.risk]}`}>
-                {preference.risk === "high" ? (
-                  <AlertTriangle className="w-3 h-3" />
-                ) : preference.risk === "medium" ? (
-                  <AlertCircle className="w-3 h-3" />
-                ) : null}
-                {preference.risk}
+            <h3 className="font-medium text-[#cdd6f4] text-sm">{preference.key.split(".").pop()}</h3>
+            {preference.warnings.length > 0 && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border text-[#f9e2af] bg-[#f9e2af]/10 border-[#f9e2af]/20">
+                <AlertTriangle className="w-3 h-3" />
+                warning
               </span>
             )}
-            <span className={`px-2 py-0.5 rounded-full text-xs ${sourceColors[preference.source]}`}>
-              {preference.source}
+            <span className={`px-2 py-0.5 rounded-full text-xs ${sourceColors[preference.source] || "text-[#94e2d5] bg-[#94e2d5]/10"}`}>
+              {getSourceLabel(preference.source)}
             </span>
           </div>
           <p className="text-[#a6adc8] text-sm leading-relaxed">{preference.description}</p>
+          {preference.notes.length > 0 && (
+            <p className="text-[#6c7086] text-xs mt-1 italic">
+              {preference.notes[0]}
+            </p>
+          )}
         </div>
         <button
           type="button"
@@ -88,15 +88,43 @@ export function PreferenceCard({ preference, isSelected, onToggle }: PreferenceC
           <div>
             <span className="text-[#6c7086]">Value: </span>
             <span className="text-[#a6e3a1]">
-              {typeof preference.defaultValue === "string"
-                ? `"${preference.defaultValue}"`
-                : String(preference.defaultValue)}
+              {typeof preference.value === "string"
+                ? `"${preference.value}"`
+                : String(preference.value)}
             </span>
           </div>
           <div>
             <span className="text-[#6c7086]">Section: </span>
             <span className="text-[#cdd6f4]">{preference.section}</span>
           </div>
+          <div>
+            <span className="text-[#6c7086]">Source: </span>
+            <span className="text-[#cdd6f4]">{preference.source}</span>
+          </div>
+          {preference.settings.length > 0 && (
+            <div>
+              <span className="text-[#6c7086]">Settings: </span>
+              <span className="text-[#cdd6f4]">{preference.settings.join(", ")}</span>
+            </div>
+          )}
+          {preference.warnings.length > 0 && (
+            <div>
+              <span className="text-[#f9e2af]">Warnings: </span>
+              <span className="text-[#f9e2af]">{preference.warnings.join("; ")}</span>
+            </div>
+          )}
+          {preference.references.length > 0 && (
+            <div>
+              <span className="text-[#6c7086]">References: </span>
+              <div className="mt-1 space-y-0.5">
+                {preference.references.slice(0, 3).map((ref, i) => (
+                  <div key={i} className="text-[#89b4fa] truncate">
+                    {ref}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

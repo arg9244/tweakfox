@@ -4,6 +4,7 @@ A web application for generating customized Firefox configuration files: `user.j
 
 ## Features
 
+- **Dynamic Updates** - Automatically fetches latest preferences from upstream repositories
 - **100+ preferences** from Betterfox & arkenfox
 - **6 categorized tabs** for preferences
 - **userChrome.css** generation for browser UI customization
@@ -12,6 +13,15 @@ A web application for generating customized Firefox configuration files: `user.j
 - **Search** across all options
 - **Live preview** before downloading
 - **Installation guide** with OS-specific paths
+- **Smart caching** - 24-hour cache with manual refresh option
+
+## How It Works
+
+The app dynamically fetches preference files from the upstream repositories:
+- **Betterfox**: Fastfox.js, Securefox.js, Peskyfox.js, Smoothfox.js
+- **arkenfox**: user.js
+
+Preferences are parsed at runtime, extracting descriptions from inline comments. The parsed data is cached locally for 24 hours to improve performance. You can manually refresh to get the latest updates.
 
 ## Development
 

@@ -3,7 +3,10 @@ import { X, Download, Copy, Check, FileText } from "lucide-react";
 import { generateUserJs, generateUserChrome, generateUserContent } from "../utils/generators";
 import { userChromeOptions, userContentOptions } from "../data/cssOptions";
 
+import type { Category } from "../hooks/useDynamicPreferences";
+
 interface PreviewModalProps {
+  categories: Category[];
   selections: Record<string, boolean>;
   onClose: () => void;
   onShowGuide: () => void;
@@ -11,11 +14,11 @@ interface PreviewModalProps {
 
 type FileTab = "userjs" | "userchrome" | "usercontent";
 
-export function PreviewModal({ selections, onClose, onShowGuide }: PreviewModalProps) {
+export function PreviewModal({ categories, selections, onClose, onShowGuide }: PreviewModalProps) {
   const [activeTab, setActiveTab] = useState<FileTab>("userjs");
   const [copied, setCopied] = useState(false);
 
-  const userjs = generateUserJs(selections);
+  const userjs = generateUserJs(categories, selections);
   const userchrome = generateUserChrome(selections);
   const usercontent = generateUserContent(selections);
 

@@ -13,10 +13,12 @@ import {
   CheckSquare,
   HelpCircle,
   Settings,
+  RefreshCw,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
-import { categories } from "./data/preferences";
 import { userChromeOptions, userContentOptions } from "./data/cssOptions";
-import { usePreferences } from "./hooks/usePreferences";
+import { useDynamicPreferences } from "./hooks/useDynamicPreferences";
 import { SearchBar } from "./components/SearchBar";
 import { PreferenceCard } from "./components/PreferenceCard";
 import { CSSOptionCard } from "./components/CSSOptionCard";
@@ -35,32 +37,45 @@ const iconMap: Record<string, typeof Zap> = {
   ShieldAlert,
   Paintbrush,
   Globe,
+  Settings,
 };
 
-const tabItems = [
-  ...categories.map((c) => ({ id: c.id, name: c.name, icon: c.icon, type: "pref" as const })),
-  { id: "userchrome", name: "userChrome.css", icon: "Paintbrush", type: "css" as const },
-  { id: "usercontent", name: "userContent.css", icon: "Globe", type: "css" as const },
-];
-
 export default function App() {
-  const [activeTab, setActiveTab] = useState<TabId>(categories[0].id);
+  const [activeTab, setActiveTab] = useState<TabId>("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [showPresets, setShowPresets] = useState(false);
 
   const {
+    categories,
     selections,
-    searchQuery,
-    setSearchQuery,
+    isLoading,
+    error,
+    lastUpdated,
     togglePreference,
     applyPreset,
     clearAll,
     selectAll,
+    refresh,
     getSelectedCount,
-  } = usePreferences();
+  } = useDynamicPreferences();
 
   const selectedCount = getSelectedCount();
+
+  // Set initial active tab when categories load
+  if (!activeTab && categories.length > 0) {
+    setActiveTab(categories[0].id);
+  }
+
+  const tabItems = useMemo(() => {
+    const prefTabs = categories.map((c) => ({ id: c.id, name: c.name, icon: c.icon, type: "pref" as const }));
+    return [
+      ...prefTabs,
+      { id: "userchrome", name: "userChrome.css", icon: "Paintbrush", type: "css" as const },
+      { id: "usercontent", name: "userContent.css", icon: "Globe", type: "css" as const },
+    ];
+  }, [categories]);
 
   const filteredPreferences = useMemo(() => {
     const cat = categories.find((c) => c.id === activeTab);
@@ -69,11 +84,11 @@ export default function App() {
     const q = searchQuery.toLowerCase();
     return cat.preferences.filter(
       (p) =>
-        p.name.toLowerCase().includes(q) ||
         p.key.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q)
+        p.description.toLowerCase().includes(q) ||
+        p.section.toLowerCase().includes(q)
     );
-  }, [activeTab, searchQuery]);
+  }, [activeTab, searchQuery, categories]);
 
   const filteredUserChrome = useMemo(() => {
     if (activeTab !== "userchrome") return [];
@@ -134,6 +149,20 @@ export default function App() {
               <span className="text-xs text-[#6c7086] px-2">
                 {selectedCount} selected
               </span>
+              {lastUpdated && (
+                <span className="text-xs text-[#6c7086]">
+                  Updated {new Date(lastUpdated).toLocaleDateString()}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={refresh}
+                disabled={isLoading}
+                className="p-2 text-[#6c7086] hover:text-[#cdd6f4] transition-colors cursor-pointer disabled:opacity-50"
+                title="Refresh preferences from source"
+              >
+                <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+              </button>
               <button
                 type="button"
                 onClick={() => setShowPresets(!showPresets)}
@@ -164,6 +193,36 @@ export default function App() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        {/* Error Banner */}
+        {error && (
+          <div className="mb-6 flex items-start gap-3 p-4 bg-[#f38ba8]/10 border border-[#f38ba8]/20 rounded-lg">
+            <AlertCircle className="w-5 h-5 text-[#f38ba8] flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm text-[#f38ba8]">{error}</p>
+              <p className="text-xs text-[#6c7086] mt-1">
+                Using cached data. Some preferences may be outdated.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={refresh}
+              disabled={isLoading}
+              className="px-3 py-1.5 text-xs bg-[#313244] border border-[#45475a] rounded text-[#cdd6f4] hover:border-[#585b70] transition-colors cursor-pointer disabled:opacity-50"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading && categories.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-24">
+            <Loader2 className="w-8 h-8 text-[#cba6f7] animate-spin mb-4" />
+            <p className="text-[#a6adc8] text-sm">Loading preferences from upstream sources...</p>
+            <p className="text-[#6c7086] text-xs mt-2">Fetching from Betterfox and arkenfox repositories</p>
+          </div>
+        )}
+
         {/* Presets Panel */}
         {showPresets && (
           <div className="mb-6">
@@ -250,7 +309,7 @@ export default function App() {
                 {filteredPreferences.length > 0 ? (
                   filteredPreferences.map((pref) => (
                     <PreferenceCard
-                      key={pref.id}
+                      key={pref.key}
                       preference={pref}
                       isSelected={!!selections[pref.key]}
                       onToggle={() => togglePreference(pref.key)}
@@ -310,6 +369,7 @@ export default function App() {
       {/* Modals */}
       {showPreview && (
         <PreviewModal
+          categories={categories}
           selections={selections}
           onClose={() => setShowPreview(false)}
           onShowGuide={() => { setShowPreview(false); setShowGuide(true); }}
