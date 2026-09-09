@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, Download, Copy, Check, FileText } from "lucide-react";
 import { generateUserJs, generateUserChrome, generateUserContent } from "../utils/generators";
+import { userChromeOptions, userContentOptions } from "../data/cssOptions";
 
 interface PreviewModalProps {
   selections: Record<string, boolean>;
@@ -69,10 +70,14 @@ export function PreviewModal({ selections, onClose, onShowGuide }: PreviewModalP
     URL.revokeObjectURL(url);
   };
 
+  const userjsCount = userjs ? (userjs.match(/user_pref\(/g) || []).length : 0;
+  const userchromeCount = userChromeOptions.filter((o) => selections[o.id]).length;
+  const usercontentCount = userContentOptions.filter((o) => selections[o.id]).length;
+
   const tabs = [
-    { id: "userjs" as const, label: "user.js", count: userjs ? userjs.split("user_pref(").length - 1 : 0 },
-    { id: "userchrome" as const, label: "userChrome.css", count: userchrome ? userchrome.split("/* ").length - 1 : 0 },
-    { id: "usercontent" as const, label: "userContent.css", count: usercontent ? usercontent.split("/* ").length - 1 : 0 },
+    { id: "userjs" as const, label: "user.js", count: userjsCount },
+    { id: "userchrome" as const, label: "userChrome.css", count: userchromeCount },
+    { id: "usercontent" as const, label: "userContent.css", count: usercontentCount },
   ];
 
   return (
@@ -81,8 +86,9 @@ export function PreviewModal({ selections, onClose, onShowGuide }: PreviewModalP
         <div className="flex items-center justify-between p-4 border-b border-[#313244]">
           <h2 className="text-lg font-semibold text-[#cdd6f4]">Preview & Export</h2>
           <button
+            type="button"
             onClick={onClose}
-            className="text-[#6c7086] hover:text-[#cdd6f4] transition-colors"
+            className="text-[#6c7086] hover:text-[#cdd6f4] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -93,8 +99,9 @@ export function PreviewModal({ selections, onClose, onShowGuide }: PreviewModalP
           {tabs.map((tab) => (
             <button
               key={tab.id}
+              type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
                 activeTab === tab.id
                   ? "border-[#cba6f7] text-[#cba6f7]"
                   : "border-transparent text-[#6c7086] hover:text-[#a6adc8]"
@@ -130,30 +137,34 @@ export function PreviewModal({ selections, onClose, onShowGuide }: PreviewModalP
         {hasContent && (
           <div className="border-t border-[#313244] p-4 flex flex-wrap items-center gap-3">
             <button
+              type="button"
               onClick={handleCopy}
-              className="flex items-center gap-2 px-4 py-2 bg-[#313244] border border-[#45475a] rounded-lg text-sm text-[#cdd6f4] hover:border-[#585b70] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#313244] border border-[#45475a] rounded-lg text-sm text-[#cdd6f4] hover:border-[#585b70] transition-colors cursor-pointer"
             >
               {copied ? <Check className="w-4 h-4 text-[#a6e3a1]" /> : <Copy className="w-4 h-4" />}
               {copied ? "Copied!" : "Copy to clipboard"}
             </button>
             <button
+              type="button"
               onClick={handleDownload}
-              className="flex items-center gap-2 px-4 py-2 bg-[#cba6f7] text-[#1e1e2e] rounded-lg text-sm font-medium hover:bg-[#b4befe] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#cba6f7] text-[#1e1e2e] rounded-lg text-sm font-medium hover:bg-[#b4befe] transition-colors cursor-pointer"
             >
               <Download className="w-4 h-4" />
               Download {getFilename()}
             </button>
             <button
+              type="button"
               onClick={handleDownloadAll}
-              className="flex items-center gap-2 px-4 py-2 bg-[#313244] border border-[#45475a] rounded-lg text-sm text-[#cdd6f4] hover:border-[#585b70] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#313244] border border-[#45475a] rounded-lg text-sm text-[#cdd6f4] hover:border-[#585b70] transition-colors cursor-pointer"
             >
               <Download className="w-4 h-4" />
               Download All
             </button>
             <div className="flex-1" />
             <button
+              type="button"
               onClick={onShowGuide}
-              className="flex items-center gap-2 px-4 py-2 text-sm text-[#89b4fa] hover:text-[#b4befe] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm text-[#89b4fa] hover:text-[#b4befe] transition-colors cursor-pointer"
             >
               <FileText className="w-4 h-4" />
               Installation Guide

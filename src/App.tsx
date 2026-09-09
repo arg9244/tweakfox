@@ -135,22 +135,25 @@ export default function App() {
                 {selectedCount} selected
               </span>
               <button
+                type="button"
                 onClick={() => setShowPresets(!showPresets)}
-                className="px-3 py-2 text-xs bg-[#313244] border border-[#45475a] rounded-lg text-[#cdd6f4] hover:border-[#585b70] transition-colors"
+                className="px-3 py-2 text-xs bg-[#313244] border border-[#45475a] rounded-lg text-[#cdd6f4] hover:border-[#585b70] transition-colors cursor-pointer"
               >
                 Presets
               </button>
               <button
+                type="button"
                 onClick={() => setShowGuide(true)}
-                className="p-2 text-[#6c7086] hover:text-[#cdd6f4] transition-colors"
+                className="p-2 text-[#6c7086] hover:text-[#cdd6f4] transition-colors cursor-pointer"
                 title="Installation guide"
               >
                 <HelpCircle className="w-4 h-4" />
               </button>
               <button
+                type="button"
                 onClick={() => setShowPreview(true)}
                 disabled={selectedCount === 0}
-                className="flex items-center gap-2 px-4 py-2 bg-[#cba6f7] text-[#1e1e2e] rounded-lg text-sm font-medium hover:bg-[#b4befe] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2 bg-[#cba6f7] text-[#1e1e2e] rounded-lg text-sm font-medium hover:bg-[#b4befe] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 <Download className="w-4 h-4" />
                 Generate
@@ -175,15 +178,17 @@ export default function App() {
           </div>
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={selectAll}
-              className="flex items-center gap-1.5 px-3 py-2.5 text-xs bg-[#313244] border border-[#45475a] rounded-lg text-[#cdd6f4] hover:border-[#585b70] transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2.5 text-xs bg-[#313244] border border-[#45475a] rounded-lg text-[#cdd6f4] hover:border-[#585b70] transition-colors cursor-pointer"
             >
               <CheckSquare className="w-3.5 h-3.5" />
               Select All
             </button>
             <button
+              type="button"
               onClick={clearAll}
-              className="flex items-center gap-1.5 px-3 py-2.5 text-xs bg-[#313244] border border-[#45475a] rounded-lg text-[#cdd6f4] hover:border-[#585b70] transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2.5 text-xs bg-[#313244] border border-[#45475a] rounded-lg text-[#cdd6f4] hover:border-[#585b70] transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Clear
@@ -194,7 +199,7 @@ export default function App() {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar Tabs */}
           <nav className="lg:w-56 flex-shrink-0">
-            <div className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
+            <div className="flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 -mx-1 px-1">
               {tabItems.map((tab) => {
                 const Icon = iconMap[tab.icon] || Settings;
                 const isActive = activeTab === tab.id;
@@ -203,16 +208,16 @@ export default function App() {
                   <button
                     key={tab.id}
                     onClick={() => { setActiveTab(tab.id); setSearchQuery(""); }}
-                    className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm whitespace-nowrap transition-colors ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors cursor-pointer ${
                       isActive
                         ? "bg-[#313244] text-[#cdd6f4] border border-[#45475a]"
-                        : "text-[#6c7086] hover:text-[#a6adc8] hover:bg-[#313244]/50"
+                        : "text-[#6c7086] hover:text-[#a6adc8] hover:bg-[#313244]/50 border border-transparent"
                     }`}
                   >
                     <Icon className="w-4 h-4 flex-shrink-0" />
-                    <span className="flex-1 text-left">{tab.name}</span>
+                    <span className="text-left">{tab.name}</span>
                     {count > 0 && (
-                      <span className="px-1.5 py-0.5 bg-[#45475a] rounded text-xs text-[#a6adc8]">
+                      <span className="ml-auto px-1.5 py-0.5 bg-[#45475a] rounded text-xs text-[#a6adc8]">
                         {count}
                       </span>
                     )}

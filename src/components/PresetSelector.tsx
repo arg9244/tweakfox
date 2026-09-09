@@ -25,7 +25,7 @@ export function PresetSelector({ onApplyPreset }: PresetSelectorProps) {
         <button
           key={preset.id}
           onClick={() => onApplyPreset(preset.id)}
-          className={`text-left p-4 bg-[#313244] border border-[#45475a] rounded-lg transition-all ${colorMap[preset.color]}`}
+          className={`text-left p-4 bg-[#313244] border border-[#45475a] rounded-lg transition-all cursor-pointer ${colorMap[preset.color]}`}
         >
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">{preset.icon}</span>

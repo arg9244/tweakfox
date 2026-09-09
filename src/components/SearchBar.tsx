@@ -8,7 +8,7 @@ interface SearchBarProps {
 export function SearchBar({ value, onChange }: SearchBarProps) {
   return (
     <div className="relative">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6c7086]" />
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6c7086] pointer-events-none" />
       <input
         type="text"
         value={value}
@@ -18,8 +18,9 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
       />
       {value && (
         <button
+          type="button"
           onClick={() => onChange("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6c7086] hover:text-[#cdd6f4] transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6c7086] hover:text-[#cdd6f4] transition-colors cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>

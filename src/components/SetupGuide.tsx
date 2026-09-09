@@ -11,8 +11,9 @@ export function SetupGuide({ onClose }: SetupGuideProps) {
         <div className="sticky top-0 bg-[#1e1e2e] border-b border-[#313244] p-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-[#cdd6f4]">Installation Guide</h2>
           <button
+            type="button"
             onClick={onClose}
-            className="text-[#6c7086] hover:text-[#cdd6f4] transition-colors"
+            className="text-[#6c7086] hover:text-[#cdd6f4] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
