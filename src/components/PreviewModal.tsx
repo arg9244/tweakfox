@@ -8,17 +8,18 @@ import type { Category } from "../hooks/useDynamicPreferences";
 interface PreviewModalProps {
   categories: Category[];
   selections: Record<string, boolean>;
+  customValues: Record<string, boolean | number | string>;
   onClose: () => void;
   onShowGuide: () => void;
 }
 
 type FileTab = "userjs" | "userchrome" | "usercontent";
 
-export function PreviewModal({ categories, selections, onClose, onShowGuide }: PreviewModalProps) {
+export function PreviewModal({ categories, selections, customValues, onClose, onShowGuide }: PreviewModalProps) {
   const [activeTab, setActiveTab] = useState<FileTab>("userjs");
   const [copied, setCopied] = useState(false);
 
-  const userjs = generateUserJs(categories, selections);
+  const userjs = generateUserJs(categories, selections, customValues);
   const userchrome = generateUserChrome(selections);
   const usercontent = generateUserContent(selections);
 

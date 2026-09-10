@@ -4,14 +4,17 @@ import { userChromeOptions, userContentOptions } from "../data/cssOptions";
 
 export function generateUserJs(
   categories: Category[],
-  selections: Record<string, boolean>
+  selections: Record<string, boolean>,
+  customValues: Record<string, boolean | number | string> = {}
 ): string {
   const allPrefs: (ParsedPreference & { categoryName: string })[] = [];
   
   categories.forEach((cat) => {
     cat.preferences.forEach((p) => {
       if (selections[p.key]) {
-        allPrefs.push({ ...p, categoryName: cat.name });
+        // Use custom value if available, otherwise use default
+        const value = customValues[p.key] !== undefined ? customValues[p.key] : p.value;
+        allPrefs.push({ ...p, value, categoryName: cat.name });
       }
     });
   });

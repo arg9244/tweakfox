@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import {
   Zap,
   Shield,
@@ -16,6 +16,8 @@ import {
   RefreshCw,
   Loader2,
   AlertCircle,
+  Upload,
+  FileText,
 } from "lucide-react";
 import { userChromeOptions, userContentOptions } from "./data/cssOptions";
 import { useDynamicPreferences } from "./hooks/useDynamicPreferences";
@@ -47,13 +49,21 @@ export default function App() {
   const [showGuide, setShowGuide] = useState(false);
   const [showPresets, setShowPresets] = useState(false);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadSuccess, setLoadSuccess] = useState<string | null>(null);
+
   const {
     categories,
     selections,
+    customValues,
     isLoading,
     error,
     lastUpdated,
+    loadedFileName,
     togglePreference,
+    setCustomValue,
+    loadUserJs,
     applyPreset,
     clearAll,
     selectAll,
@@ -129,6 +139,32 @@ export default function App() {
   const currentTab = tabItems.find((t) => t.id === activeTab);
   const currentCategory = categories.find((c) => c.id === activeTab);
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLoadError(null);
+    setLoadSuccess(null);
+
+    try {
+      const content = await file.text();
+      const result = loadUserJs(content, file.name);
+      
+      if (result.errors.length > 0) {
+        setLoadError(`Loaded ${result.loaded} preferences with ${result.errors.length} errors`);
+      } else {
+        setLoadSuccess(`Successfully loaded ${result.loaded} preferences from ${file.name}`);
+      }
+
+      // Clear the file input so the same file can be loaded again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Failed to load file");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#1e1e2e] text-[#cdd6f4]">
       {/* Header */}
@@ -154,6 +190,21 @@ export default function App() {
                   Updated {new Date(lastUpdated).toLocaleDateString()}
                 </span>
               )}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="p-2 text-[#6c7086] hover:text-[#cdd6f4] transition-colors cursor-pointer"
+                title="Load existing user.js"
+              >
+                <Upload className="w-4 h-4" />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".js,.txt"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
               <button
                 type="button"
                 onClick={refresh}
@@ -211,6 +262,53 @@ export default function App() {
             >
               Retry
             </button>
+          </div>
+        )}
+
+        {/* Load Success Banner */}
+        {loadSuccess && (
+          <div className="mb-6 flex items-start gap-3 p-4 bg-[#a6e3a1]/10 border border-[#a6e3a1]/20 rounded-lg">
+            <FileText className="w-5 h-5 text-[#a6e3a1] flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm text-[#a6e3a1]">{loadSuccess}</p>
+              <p className="text-xs text-[#6c7086] mt-1">
+                You can now modify these preferences and export them.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setLoadSuccess(null)}
+              className="px-3 py-1.5 text-xs bg-[#313244] border border-[#45475a] rounded text-[#cdd6f4] hover:border-[#585b70] transition-colors cursor-pointer"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Load Error Banner */}
+        {loadError && (
+          <div className="mb-6 flex items-start gap-3 p-4 bg-[#f9e2af]/10 border border-[#f9e2af]/20 rounded-lg">
+            <AlertCircle className="w-5 h-5 text-[#f9e2af] flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm text-[#f9e2af]">{loadError}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setLoadError(null)}
+              className="px-3 py-1.5 text-xs bg-[#313244] border border-[#45475a] rounded text-[#cdd6f4] hover:border-[#585b70] transition-colors cursor-pointer"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Loaded File Indicator */}
+        {loadedFileName && (
+          <div className="mb-6 flex items-center gap-2 px-4 py-2 bg-[#313244] border border-[#45475a] rounded-lg">
+            <FileText className="w-4 h-4 text-[#89b4fa]" />
+            <span className="text-sm text-[#cdd6f4]">
+              Loaded from: <code className="text-[#89b4fa]">{loadedFileName}</code>
+            </span>
           </div>
         )}
 
@@ -312,7 +410,9 @@ export default function App() {
                       key={pref.key}
                       preference={pref}
                       isSelected={!!selections[pref.key]}
+                      customValue={customValues[pref.key]}
                       onToggle={() => togglePreference(pref.key)}
+                      onValueChange={(value) => setCustomValue(pref.key, value)}
                     />
                   ))
                 ) : (
@@ -371,6 +471,7 @@ export default function App() {
         <PreviewModal
           categories={categories}
           selections={selections}
+          customValues={customValues}
           onClose={() => setShowPreview(false)}
           onShowGuide={() => { setShowPreview(false); setShowGuide(true); }}
         />

@@ -19,10 +19,14 @@ export interface Category {
 export interface UseDynamicPreferencesResult {
   categories: Category[];
   selections: Record<string, boolean>;
+  customValues: Record<string, boolean | number | string>;
   isLoading: boolean;
   error: string | null;
   lastUpdated: number | null;
+  loadedFileName: string | null;
   togglePreference: (key: string) => void;
+  setCustomValue: (key: string, value: boolean | number | string) => void;
+  loadUserJs: (content: string, fileName: string) => { loaded: number; errors: string[] };
   applyPreset: (presetId: string) => void;
   clearAll: () => void;
   selectAll: () => void;
@@ -160,9 +164,11 @@ function getCategoryKey(pref: ParsedPreference): string {
 export function useDynamicPreferences(): UseDynamicPreferencesResult {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selections, setSelections] = useState<Record<string, boolean>>({});
+  const [customValues, setCustomValues] = useState<Record<string, boolean | number | string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
+  const [loadedFileName, setLoadedFileName] = useState<string | null>(null);
 
   // Load preferences on mount
   useEffect(() => {
@@ -196,6 +202,77 @@ export function useDynamicPreferences(): UseDynamicPreferencesResult {
 
   const togglePreference = useCallback((key: string) => {
     setSelections((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  const setCustomValue = useCallback((key: string, value: boolean | number | string) => {
+    setCustomValues((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
+  const loadUserJs = useCallback((content: string, fileName: string) => {
+    const lines = content.split(/\r?\n/);
+    const newSelections: Record<string, boolean> = {};
+    const newCustomValues: Record<string, boolean | number | string> = {};
+    const errors: string[] = [];
+    let loaded = 0;
+
+    const USER_PREF_REGEX = /^\s*(\/\/\s*)?user_pref\s*\(\s*"([^"]+)"\s*,\s*(.+?)\s*\)\s*;?\s*$/;
+
+    lines.forEach((line, index) => {
+      const match = line.match(USER_PREF_REGEX);
+      if (match) {
+        const isCommented = !!match[1];
+        const key = match[2];
+        const rawValue = match[3].trim().replace(/,?\s*$/, "");
+
+        try {
+          let value: boolean | number | string;
+          let type: "boolean" | "number" | "string";
+
+          if (rawValue === "true") {
+            value = true;
+            type = "boolean";
+          } else if (rawValue === "false") {
+            value = false;
+            type = "boolean";
+          } else {
+            const num = Number(rawValue);
+            if (!isNaN(num) && rawValue !== "") {
+              value = num;
+              type = "number";
+            } else {
+              const strMatch = rawValue.match(/^["'](.*)["']$/);
+              if (strMatch) {
+                value = strMatch[1];
+                type = "string";
+              } else {
+                value = rawValue;
+                type = "string";
+              }
+            }
+          }
+
+          // Only load non-commented preferences
+          if (!isCommented) {
+            newSelections[key] = true;
+            
+            // Check if this is a non-boolean value or if we should store it
+            if (type !== "boolean") {
+              newCustomValues[key] = value;
+            }
+            
+            loaded++;
+          }
+        } catch (err) {
+          errors.push(`Line ${index + 1}: Failed to parse value for "${key}"`);
+        }
+      }
+    });
+
+    setSelections(newSelections);
+    setCustomValues(newCustomValues);
+    setLoadedFileName(fileName);
+
+    return { loaded, errors };
   }, []);
 
   const applyPreset = useCallback(
@@ -241,6 +318,8 @@ export function useDynamicPreferences(): UseDynamicPreferencesResult {
 
   const clearAll = useCallback(() => {
     setSelections({});
+    setCustomValues({});
+    setLoadedFileName(null);
   }, []);
 
   const selectAll = useCallback(() => {
@@ -267,10 +346,14 @@ export function useDynamicPreferences(): UseDynamicPreferencesResult {
   return {
     categories,
     selections,
+    customValues,
     isLoading,
     error,
     lastUpdated,
+    loadedFileName,
     togglePreference,
+    setCustomValue,
+    loadUserJs,
     applyPreset,
     clearAll,
     selectAll,

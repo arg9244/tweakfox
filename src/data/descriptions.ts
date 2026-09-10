@@ -342,6 +342,118 @@ export const preferenceDescriptions: Record<string, string> = {
   "browser.sessionstore.restore_on_demand": "Controls whether tabs are restored on demand or all at once. On-demand uses less memory.",
   "browser.sessionstore.restore_tabs_lazily": "Lazily restores tabs to save memory. Tabs load when you switch to them.",
   "extensions.webcompat.enable_shims": "Enables compatibility shims for tracking protection. Helps sites work with strict tracking protection.",
+
+  // ============ ADDITIONAL COMMON PREFS ============
+
+  // Browser behavior
+  "browser.startup.homepage": "Sets your homepage URL. Use 'about:home' for default, 'about:blank' for empty, or any URL.",
+  "browser.startup.page": "Controls what Firefox shows on startup. 0=blank, 1=homepage, 3=restore previous session.",
+  "browser.newtabpage.enabled": "Controls whether the new tab page shows activity stream content or blank page.",
+  "browser.tabs.loadBookmarksInTabs": "Controls where bookmarks open. false=current tab, true=new tab.",
+  "browser.tabs.tabMinWidth": "Minimum width of tabs in pixels. Lower values allow more tabs to be visible.",
+  "browser.tabs.tabMaxWidth": "Maximum width of tabs in pixels. Prevents tabs from becoming too wide.",
+  "browser.tabs.tabClipWidth": "Width at which tab close button appears. Lower values show close button sooner.",
+  
+  // Downloads
+  "browser.download.dir": "Default download directory path. Use full system path (e.g., /home/user/Downloads).",
+  "browser.download.folderList": "Download location. 0=Desktop, 1=Downloads, 2=Custom (use browser.download.dir).",
+  "browser.download.useDownloadDir": "Automatically save files to download folder without asking. false=always ask.",
+  "browser.download.manager.showWhenStarting": "Show download manager when download starts.",
+  "browser.download.manager.closeWhenDone": "Close download manager when downloads complete.",
+  
+  // Search
+  "browser.search.defaultenginename": "Default search engine name (e.g., 'Google', 'DuckDuckGo', 'Bing').",
+  "browser.search.order.1": "First search engine in the search bar dropdown.",
+  "browser.search.order.2": "Second search engine in the search bar dropdown.",
+  "browser.search.order.3": "Third search engine in the search bar dropdown.",
+  
+  // Privacy
+  "privacy.clearOnShutdown.cache": "Clear cache when Firefox closes.",
+  "privacy.clearOnShutdown.cookies": "Clear cookies when Firefox closes.",
+  "privacy.clearOnShutdown.downloads": "Clear download history when Firefox closes.",
+  "privacy.clearOnShutdown.formdata": "Clear form history when Firefox closes.",
+  "privacy.clearOnShutdown.history": "Clear browsing history when Firefox closes.",
+  "privacy.clearOnShutdown.sessions": "Clear active sessions when Firefox closes.",
+  "privacy.clearOnShutdown.siteSettings": "Clear site preferences when Firefox closes.",
+  "privacy.clearOnShutdown.offlineApps": "Clear offline website data when Firefox closes.",
+  
+  // Network
+  "network.proxy.type": "Proxy configuration. 0=direct, 1=manual, 2=PAC, 4=auto-detect, 5=system settings.",
+  "network.proxy.http": "HTTP proxy server hostname.",
+  "network.proxy.http_port": "HTTP proxy server port number.",
+  "network.proxy.ssl": "HTTPS proxy server hostname.",
+  "network.proxy.ssl_port": "HTTPS proxy server port number.",
+  "network.proxy.no_proxies_on": "Comma-separated list of hosts that bypass the proxy (e.g., 'localhost, 127.0.0.1').",
+  "network.proxy.autoconfig_url": "URL to proxy auto-configuration (PAC) file.",
+  
+  // Security
+  "security.tls.version.min": "Minimum TLS version allowed. 1=TLS 1.0, 2=TLS 1.1, 3=TLS 1.2, 4=TLS 1.3.",
+  "security.tls.version.max": "Maximum TLS version allowed. 4=TLS 1.3 (recommended).",
+  "security.mixed_content.upgrade_display_content": "Automatically upgrade insecure images/video to HTTPS when possible.",
+  
+  // UI
+  "browser.uiCustomization.state": "Stores toolbar customization state. Don't modify manually.",
+  "browser.toolbars.bookmarks.visibility": "When to show bookmarks toolbar. 'always', 'newtab', or 'never'.",
+  "browser.chrome.site_icons": "Load and display website favicons in tabs and bookmarks.",
+  "browser.chrome.favicons": "Enable favicon loading. false=no favicons anywhere.",
+  
+  // Accessibility
+  "accessibility.typeaheadfind": "Enable type-ahead find (start typing to search page).",
+  "accessibility.typeaheadfind.timeout": "Milliseconds before type-ahead find times out.",
+  
+  // Extensions
+  "extensions.autoDisableScopes": "Controls which extension scopes are auto-disabled. 0=none, 15=all.",
+  
+  // Developer tools
+  "devtools.chrome.enabled": "Enable developer tools in browser chrome (about:config, etc.).",
+  "devtools.debugger.remote-enabled": "Allow remote debugging. Security risk if enabled.",
+  "devtools.theme": "Developer tools theme. 'dark' or 'light'.",
+  
+  // General
+  "general.useragent.override": "Custom User-Agent string. Leave empty for default. Use with caution.",
+  "general.warnOnAboutConfig": "Show warning when accessing about:config. false=skip warning.",
+  "general.smoothScroll": "Enable smooth scrolling. false=jump scrolling.",
+  "general.autoScroll": "Enable auto-scrolling with middle mouse button.",
+  
+  // Fonts
+  "font.name.serif.x-western": "Default serif font for Western languages.",
+  "font.name.sans-serif.x-western": "Default sans-serif font for Western languages.",
+  "font.name.monospace.x-western": "Default monospace font for Western languages.",
+  "font.size.variable.x-western": "Default variable font size in pixels.",
+  "font.size.fixed.x-western": "Default fixed-width font size in pixels.",
+  
+  // Printing
+  "print.printer_Mozilla_Save_to_PDF.print_to_file": "Print to file instead of printer.",
+  "print.save_print_settings": "Save print settings between sessions.",
+  
+  // Spell checking
+  "spellchecker.dictionary": "Default spell check dictionary language code (e.g., 'en-US').",
+  
+  // Cookies
+  "network.cookie.lifetimePolicy": "Cookie lifetime. 0=normal, 2=session only, 3=days (see next pref).",
+  "network.cookie.lifetime.days": "Number of days cookies are valid when lifetimePolicy=3.",
+  
+  // Cache
+  "browser.cache.offline.enable": "Enable offline application cache for web apps.",
+  "browser.cache.offline.capacity": "Offline cache capacity in KB.",
+  
+  // History
+  "places.history.enabled": "Enable browsing history. false=don't remember visited pages.",
+  "places.history.expiration.max_pages": "Maximum number of pages to keep in history.",
+  
+  // Bookmarks
+  "browser.bookmarks.autoExportHTML": "Automatically export bookmarks to HTML file.",
+  "browser.bookmarks.file": "Path to bookmarks HTML export file.",
+  
+  // Session
+  "browser.sessionstore.max_tabs_undo": "Number of closed tabs to remember for 'Undo Close Tab'.",
+  "browser.sessionstore.max_windows_undo": "Number of closed windows to remember for 'Undo Close Window'.",
+  "browser.sessionstore.resume_from_crash": "Offer to restore session after Firefox crashes.",
+  
+  // Zoom
+  "browser.zoom.full": "Zoom entire page (true) or text only (false).",
+  "zoom.minPercent": "Minimum zoom level as percentage (e.g., 30 for 30%).",
+  "zoom.maxPercent": "Maximum zoom level as percentage (e.g., 500 for 500%).",
 };
 
 /**
