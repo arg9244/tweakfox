@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { ChevronDown, AlertTriangle, AlertCircle, Edit3 } from "lucide-react";
+import { ChevronDown, AlertTriangle, AlertCircle, Edit3, Search } from "lucide-react";
 import type { ParsedPreference } from "../services/parser";
 import { getDescription } from "../data/descriptions";
+import { getTagsForPreference, getTagColorClass } from "../data/tags";
 
 interface PreferenceCardProps {
   preference: ParsedPreference;
@@ -38,6 +39,14 @@ export function PreferenceCard({
   const isBoolean = preference.type === "boolean";
   const currentValue = customValue !== undefined ? customValue : preference.value;
   const hasCustomValue = customValue !== undefined && customValue !== preference.value;
+  const tags = getTagsForPreference(preference.key);
+
+  const handleSearchAI = () => {
+    const query = encodeURIComponent(
+      `Explain Firefox preference "${preference.key}" - what does it do, is it safe, and do you recommend enabling it?`
+    );
+    window.open(`https://duckduckgo.com/?q=${query}&ia=chat`, "_blank");
+  };
 
   return (
     <div
@@ -50,8 +59,8 @@ export function PreferenceCard({
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <h3 className="font-medium text-[#cdd6f4] text-sm">
-              {preference.key.split(".").pop()}
+            <h3 className="font-medium text-[#cdd6f4] text-sm font-mono">
+              {preference.key}
             </h3>
             {preference.warnings.length > 0 && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border text-[#f9e2af] bg-[#f9e2af]/10 border-[#f9e2af]/20">
@@ -73,6 +82,22 @@ export function PreferenceCard({
               {getSourceLabel(preference.source)}
             </span>
           </div>
+          
+          {/* Tags */}
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-2">
+              {tags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className={`px-2 py-0.5 rounded-full text-xs border ${getTagColorClass(tag.color)}`}
+                  title={tag.description}
+                >
+                  {tag.label}
+                </span>
+              ))}
+            </div>
+          )}
+          
           <p className="text-[#a6adc8] text-sm leading-relaxed">{description}</p>
           {preference.notes.length > 0 && (
             <p className="text-[#6c7086] text-xs mt-1 italic">{preference.notes[0]}</p>
@@ -230,6 +255,18 @@ export function PreferenceCard({
               </div>
             </div>
           )}
+          
+          {/* AI Search Button */}
+          <div className="pt-2 mt-2 border-t border-[#45475a]">
+            <button
+              type="button"
+              onClick={handleSearchAI}
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#89b4fa]/10 hover:bg-[#89b4fa]/20 border border-[#89b4fa]/20 rounded text-xs text-[#89b4fa] transition-colors cursor-pointer"
+            >
+              <Search className="w-3 h-3" />
+              Ask AI to explain this preference
+            </button>
+          </div>
         </div>
       )}
     </div>

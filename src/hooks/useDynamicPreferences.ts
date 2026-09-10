@@ -51,10 +51,13 @@ function mapToCategories(preferences: ParsedPreference[]): Category[] {
   // Define category order and metadata
   const categoryDefs = [
     { key: "performance", name: "Performance", icon: "Zap", description: "Speed up Firefox with optimized caching, networking, and rendering settings." },
-    { key: "security", name: "Security & Privacy", icon: "Shield", description: "Enhanced tracking protection, HTTPS enforcement, and anti-fingerprinting." },
-    { key: "telemetry", name: "Telemetry & Data", icon: "EyeOff", description: "Disable all telemetry, experiments, crash reports, and data collection." },
-    { key: "ui", name: "UI & Annoyances", icon: "Sparkles", description: "Remove Mozilla UI clutter, disable AI features, and clean up the browsing experience." },
-    { key: "privacy", name: "Privacy Hardening", icon: "Lock", description: "Advanced privacy settings: partitioning, cookies, and tracking prevention." },
+    { key: "networking", name: "Networking", icon: "Globe", description: "Network optimization, proxy settings, DNS, and connection management." },
+    { key: "security", name: "Security", icon: "Shield", description: "HTTPS enforcement, SSL/TLS settings, certificate validation, and security hardening." },
+    { key: "privacy", name: "Privacy & Tracking", icon: "Eye", description: "Tracking protection, cookie management, fingerprinting prevention, and data isolation." },
+    { key: "telemetry", name: "Telemetry & Data Collection", icon: "EyeOff", description: "Disable all telemetry, experiments, crash reports, and data collection." },
+    { key: "ui", name: "UI & Experience", icon: "Sparkles", description: "Interface customization, new tab page, URL bar, and user experience tweaks." },
+    { key: "media", name: "Media & Downloads", icon: "Play", description: "Video/audio playback, buffering, downloads, and PDF handling." },
+    { key: "extensions", name: "Extensions & Add-ons", icon: "Puzzle", description: "Extension management, scopes, and add-on behavior." },
     { key: "other", name: "Other Settings", icon: "Settings", description: "Additional preferences and settings." },
   ];
 
@@ -78,18 +81,49 @@ function getCategoryKey(pref: ParsedPreference): string {
   const section = pref.section.toLowerCase();
   const key = pref.key.toLowerCase();
 
-  // Performance-related
+  // Networking (specific network settings)
+  if (
+    key.startsWith("network.") ||
+    key.startsWith("dns.") ||
+    section.includes("network") ||
+    section.includes("proxy") ||
+    section.includes("dns")
+  ) {
+    // But not network privacy settings
+    if (!key.includes("predictor") && !key.includes("prefetch") && !key.includes("speculative")) {
+      return "networking";
+    }
+  }
+
+  // Media & Downloads
+  if (
+    key.startsWith("media.") ||
+    key.startsWith("browser.download") ||
+    key.startsWith("pdfjs") ||
+    section.includes("media") ||
+    section.includes("download") ||
+    section.includes("pdf")
+  ) {
+    return "media";
+  }
+
+  // Extensions
+  if (
+    key.startsWith("extensions.") ||
+    section.includes("extension") ||
+    section.includes("addon")
+  ) {
+    return "extensions";
+  }
+
+  // Performance-related (rendering, cache, gfx)
   if (
     section.includes("fast") ||
     section.includes("performance") ||
-    section.includes("cache") ||
-    section.includes("network") ||
-    section.includes("gfx") ||
-    section.includes("render") ||
-    key.includes("cache") ||
-    key.includes("network") ||
-    key.includes("gfx") ||
-    key.includes("content.notify")
+    key.includes("gfx.") ||
+    key.includes("content.notify") ||
+    key.includes("nglayout") ||
+    (key.includes("cache") && !key.startsWith("network.") && !key.startsWith("media."))
   ) {
     return "performance";
   }

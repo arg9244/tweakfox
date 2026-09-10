@@ -454,6 +454,118 @@ export const preferenceDescriptions: Record<string, string> = {
   "browser.zoom.full": "Zoom entire page (true) or text only (false).",
   "zoom.minPercent": "Minimum zoom level as percentage (e.g., 30 for 30%).",
   "zoom.maxPercent": "Maximum zoom level as percentage (e.g., 500 for 500%).",
+
+  // ============ FIX BROKEN DESCRIPTIONS ============
+  
+  // UNC paths
+  "security.fileuri.strict_origin_policy": "Enforce strict origin policy for file:// URIs. Prevents local files from accessing other local files. Improves security but may break some local development workflows.",
+  
+  // SOCKS proxy DNS
+  "network.proxy.socks_remote_dns": "Route DNS lookups through the SOCKS proxy server. Essential for Tor usage - prevents your local DNS server from knowing your Tor destinations. Keeps DNS queries private.",
+  
+  // Sanitize on shutdown
+  "privacy.sanitize.sanitizeOnShutdown": "Automatically clear browsing data when Firefox closes. Ignores 'Allow' site exceptions - clears everything. Ensures no data persists between sessions.",
+  
+  // Clear data items
+  "privacy.clearOnShutdown_v2.cache": "Clear cache when Firefox closes. Part of sanitize-on-shutdown. Removes temporary files and cached content.",
+  "privacy.clearOnShutdown_v2.cookies": "Clear all cookies when Firefox closes. Part of sanitize-on-shutdown. Logs you out of all websites.",
+  "privacy.clearOnShutdown_v2.downloads": "Clear download history when Firefox closes. Part of sanitize-on-shutdown. Removes record of downloaded files.",
+  "privacy.clearOnShutdown_v2.formdata": "Clear form and search history when Firefox closes. Part of sanitize-on-shutdown. Removes autocomplete data.",
+  "privacy.clearOnShutdown_v2.history": "Clear browsing and download history when Firefox closes. Part of sanitize-on-shutdown. Removes visited pages list.",
+  "privacy.clearOnShutdown_v2.sessions": "Clear active login sessions when Firefox closes. Part of sanitize-on-shutdown. Logs you out of websites.",
+  "privacy.clearOnShutdown_v2.siteSettings": "Clear site-specific settings when Firefox closes. Part of sanitize-on-shutdown. Removes per-site permissions and preferences.",
+  "privacy.clearOnShutdown_v2.offlineApps": "Clear offline website data when Firefox closes. Part of sanitize-on-shutdown. Removes service workers and offline storage.",
+  
+  // Manual clear data
+  "privacy.clearData.siteData": "Clear site data manually via Clear Data dialog. Part of manual sanitization. Removes cookies and storage for selected sites.",
+  "privacy.clearData.cache": "Clear cache manually via Clear Data dialog. Part of manual sanitization. Removes temporary files and cached content.",
+  
+  // Additional common prefs
+  "browser.tabs.insertAfterCurrent": "New tabs open after the current tab (true) or at the end of the tab bar (false).",
+  "browser.tabs.selectOwnerOnClose": "When closing a tab, select the tab that opened it (true) or the previous tab (false).",
+  "browser.tabs.warnOnClose": "Show warning when closing multiple tabs (true) or close without warning (false).",
+  "browser.tabs.warnOnOpen": "Show warning when opening many tabs at once (true) or open without warning (false).",
+  
+  "browser.urlbar.autoFill": "Automatically complete URLs as you type in the address bar (true) or wait for you to press Tab (false).",
+  "browser.urlbar.matchBuckets": "Control what types of suggestions appear in the URL bar dropdown. Format: 'history:X,bookmark:Y,search:Z'.",
+  "browser.urlbar.maxRichResults": "Maximum number of suggestions to show in the URL bar dropdown. Default is 10.",
+  
+  "browser.urlbar.suggest.bookmark": "Show bookmark suggestions in the URL bar dropdown.",
+  "browser.urlbar.suggest.history": "Show history suggestions in the URL bar dropdown.",
+  "browser.urlbar.suggest.openpage": "Show open tab suggestions in the URL bar dropdown.",
+  "browser.urlbar.suggest.topsites": "Show top sites suggestions in the URL bar dropdown.",
+  
+  "places.frecency.numVisits": "Number of visits to consider when calculating frecency (frequency + recency) score for URL bar suggestions.",
+  "places.frecency.defaultVisitValue": "Default visit weight for frecency calculation. Higher values give more weight to visits.",
+  
+  "browser.safebrowsing.provider.google.updateURL": "URL for Google Safe Browsing database updates. Leave empty to disable Google Safe Browsing updates.",
+  "browser.safebrowsing.provider.google4.updateURL": "URL for Google Safe Browsing v4 database updates. Leave empty to disable v4 updates.",
+  
+  "privacy.trackingprotection.enabled": "Enable tracking protection globally. Blocks known tracking scripts and resources.",
+  "privacy.trackingprotection.pbmode.enabled": "Enable tracking protection in private browsing mode only.",
+  
+  "browser.contentblocking.reportBreakage.enabled": "Allow users to report when content blocking breaks a website. Helps Mozilla improve blocking lists.",
+  "browser.contentblocking.reportBreakage.url": "URL for content blocking breakage reports.",
+  
+  "network.http.redirection-limit": "Maximum number of HTTP redirects to follow. Prevents infinite redirect loops. Default is 20.",
+  "network.http.redirection-limit.cross-origin": "Maximum number of cross-origin HTTP redirects to follow. Stricter limit for security.",
+  
+  "security.cert_pinning.enforcement_level": "HTTP Public Key Pinning (HPKP) enforcement level. 0=disabled, 1=default, 2=strict for CA certs, 3=strict for all.",
+  
+  "browser.sessionstore.max_resumed_crashes": "Number of crashes before Firefox stops offering to restore the session. Prevents crash loops.",
+  
+  "browser.newtabpage.activity-stream.improvesearch.handoffToAwesomebar": "Hand off search queries from the New Tab page to the awesomebar (URL bar) instead of searching directly.",
+  
+  "browser.newtabpage.activity-stream.feeds.snippets": "Show Mozilla snippets and messages on the New Tab page. Disable for cleaner interface.",
+  "browser.newtabpage.activity-stream.feeds.systemtick": "Enable system tick for New Tab page updates. Required for some New Tab features.",
+  
+  "browser.newtabpage.activity-stream.asrouter.userprefs.cfr": "Enable Contextual Feature Recommender (CFR). Shows feature and extension recommendations.",
+  
+  "browser.newtabpage.activity-stream.telemetry.ping.endpoint": "Endpoint URL for New Tab page telemetry. Leave empty to disable telemetry.",
+  
+  "browser.newtabpage.activity-stream.section.highlights.includeBookmarks": "Show recent bookmarks in the Highlights section of the New Tab page.",
+  "browser.newtabpage.activity-stream.section.highlights.includeDownloads": "Show recent downloads in the Highlights section of the New Tab page.",
+  "browser.newtabpage.activity-stream.section.highlights.includePocket": "Show Pocket recommendations in the Highlights section of the New Tab page.",
+  "browser.newtabpage.activity-stream.section.highlights.includeVisited": "Show recently visited pages in the Highlights section of the New Tab page.",
+  
+  "browser.urlbar.placeholderName": "Custom placeholder text for the URL bar. Leave empty for default 'Search with [engine] or enter address'.",
+  
+  "browser.search.hiddenOneOffs": "Comma-separated list of search engines to hide from the one-off search buttons in the URL bar dropdown.",
+  "browser.search.visibleOneOffs": "Comma-separated list of search engines to show in the one-off search buttons. Overrides hiddenOneOffs.",
+  
+  "browser.urlbar.oneOffSearchButtons": "Show one-off search buttons in the URL bar dropdown (true) or hide them (false).",
+  
+  "identity.fxaccounts.enabled": "Enable Firefox Accounts and Sync. Disable to remove Firefox account features entirely.",
+  
+  "browser.newtabpage.activity-stream.showTopSites": "Show Top Sites section on the New Tab page.",
+  "browser.newtabpage.activity-stream.topSitesRows": "Number of rows to show in the Top Sites section. Default is 1.",
+  
+  "browser.newtabpage.activity-stream.feeds.topsites": "Enable Top Sites feed for the New Tab page. Required for Top Sites to update.",
+  
+  "browser.newtabpage.activity-stream.disableSnippets": "Disable Mozilla snippets on the New Tab page for cleaner interface.",
+  
+  "browser.urlbar.update2.engineAliasRefresh": "Allow search engine aliases to be refreshed from remote settings.",
+  
+  "browser.urlbar.quicksuggest.dataCollection.enabled": "Enable data collection for Firefox Suggest. Sends search queries to Mozilla for improving suggestions.",
+  
+  "browser.urlbar.suggest.quicksuggest": "Show Firefox Suggest suggestions in the URL bar dropdown.",
+  "browser.urlbar.suggest.quicksuggest.sponsored": "Show sponsored Firefox Suggest suggestions in the URL bar dropdown.",
+  
+  "browser.urlbar.weather.featureGate": "Enable weather suggestions in the URL bar. Shows weather for your location.",
+  
+  "browser.urlbar.clipboard.featureGate": "Enable clipboard suggestions in the URL bar. Suggests URLs from your clipboard.",
+  
+  "browser.urlbar.bestMatch.featureGate": "Enable best match suggestions in the URL bar. Shows the most relevant result first.",
+  
+  "browser.urlbar.addons.featureGate": "Enable add-on suggestions in the URL bar. Suggests relevant extensions.",
+  
+  "browser.urlbar.mdn.featureGate": "Enable MDN (Mozilla Developer Network) suggestions in the URL bar for developer queries.",
+  
+  "browser.urlbar.pocket.featureGate": "Enable Pocket suggestions in the URL bar. Shows saved Pocket articles.",
+  
+  "browser.urlbar.yelp.featureGate": "Enable Yelp suggestions in the URL bar. Shows local business recommendations.",
+  
+  "browser.urlbar.fakeserp.featureGate": "Enable fake SERP (Search Engine Results Page) detection. Helps identify when a search page is not legitimate.",
 };
 
 /**

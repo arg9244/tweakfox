@@ -18,6 +18,8 @@ import {
   AlertCircle,
   Upload,
   FileText,
+  Play,
+  Puzzle,
 } from "lucide-react";
 import { userChromeOptions, userContentOptions } from "./data/cssOptions";
 import { useDynamicPreferences } from "./hooks/useDynamicPreferences";
@@ -40,6 +42,9 @@ const iconMap: Record<string, typeof Zap> = {
   Paintbrush,
   Globe,
   Settings,
+  Play,
+  Puzzle,
+  EyeOff: Eye, // Map EyeOff to Eye since we don't have EyeOff imported
 };
 
 export default function App() {
@@ -388,16 +393,50 @@ export default function App() {
           <main className="flex-1 min-w-0">
             {/* Category Header */}
             {(currentCategory || currentTab?.type === "css") && (
-              <div className="mb-4">
-                <h2 className="text-lg font-medium text-[#cdd6f4] mb-1">
-                  {currentCategory?.name || currentTab?.name}
-                </h2>
-                <p className="text-sm text-[#6c7086]">
-                  {currentCategory?.description ||
-                    (currentTab?.id === "userchrome"
-                      ? "Customize Firefox browser UI: tabs, toolbars, buttons, and layout."
-                      : "Customize how web pages are displayed: scrollbars, fonts, animations, and more.")}
-                </p>
+              <div className="mb-4 flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <h2 className="text-lg font-medium text-[#cdd6f4] mb-1">
+                    {currentCategory?.name || currentTab?.name}
+                  </h2>
+                  <p className="text-sm text-[#6c7086]">
+                    {currentCategory?.description ||
+                      (currentTab?.id === "userchrome"
+                        ? "Customize Firefox browser UI: tabs, toolbars, buttons, and layout."
+                        : "Customize how web pages are displayed: scrollbars, fonts, animations, and more.")}
+                  </p>
+                </div>
+                {currentCategory && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const allSelected = currentCategory.preferences.every(p => selections[p.key]);
+                      if (allSelected) {
+                        // Deselect all in this category
+                        const newSelections = { ...selections };
+                        currentCategory.preferences.forEach(p => {
+                          delete newSelections[p.key];
+                        });
+                        // We need to update selections - but we don't have direct access
+                        // So we'll use a workaround: toggle each one
+                        currentCategory.preferences.forEach(p => {
+                          if (selections[p.key]) {
+                            togglePreference(p.key);
+                          }
+                        });
+                      } else {
+                        // Select all in this category
+                        currentCategory.preferences.forEach(p => {
+                          if (!selections[p.key]) {
+                            togglePreference(p.key);
+                          }
+                        });
+                      }
+                    }}
+                    className="px-3 py-1.5 text-xs bg-[#313244] border border-[#45475a] rounded text-[#cdd6f4] hover:border-[#585b70] transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    {currentCategory.preferences.every(p => selections[p.key]) ? "Deselect All" : "Select All"}
+                  </button>
+                )}
               </div>
             )}
 

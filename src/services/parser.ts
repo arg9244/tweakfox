@@ -230,9 +230,28 @@ export function mergeParsedFiles(files: ParsedFile[]): ParsedPreference[] {
     for (const pref of file.preferences) {
       if (!seen.has(pref.key)) {
         seen.set(pref.key, pref);
+      } else {
+        // Duplicate found - keep the first occurrence but log it
+        console.log(`[Parser] Duplicate preference found: ${pref.key} in ${file.source} (already exists from ${seen.get(pref.key)!.source})`);
       }
     }
   }
 
+  return Array.from(seen.values());
+}
+
+/**
+ * Remove duplicate preferences from a single file
+ * Keeps the first occurrence of each preference key
+ */
+export function removeDuplicates(preferences: ParsedPreference[]): ParsedPreference[] {
+  const seen = new Map<string, ParsedPreference>();
+  
+  for (const pref of preferences) {
+    if (!seen.has(pref.key)) {
+      seen.set(pref.key, pref);
+    }
+  }
+  
   return Array.from(seen.values());
 }
