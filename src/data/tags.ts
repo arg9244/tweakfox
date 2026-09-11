@@ -20,7 +20,8 @@ export type TagType =
   | "tracking"
   | "performance"
   | "telemetry"
-  | "experimental";
+  | "experimental"
+  | "personal-preference";
 
 export interface Tag {
   id: TagType;
@@ -137,6 +138,12 @@ export const TAGS: Record<TagType, Tag> = {
     label: "Experimental",
     color: "yellow",
     description: "Experimental feature, may be unstable"
+  },
+  "personal-preference": {
+    id: "personal-preference",
+    label: "Personal Preference",
+    color: "green",
+    description: "Subjective preference that varies by user needs and workflow"
   }
 };
 

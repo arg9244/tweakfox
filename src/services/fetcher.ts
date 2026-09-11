@@ -4,6 +4,7 @@
  */
 
 import { parseUserJs, mergeParsedFiles, type ParsedPreference } from "./parser";
+import { fetchCustomUserJs } from "./customUserJs";
 
 export interface SourceConfig {
   name: string;
@@ -22,36 +23,12 @@ export interface FetchResult {
 const CACHE_KEY = "firefox-config-generator-cache";
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
-// Source files to fetch
+// Source files to fetch - Now using custom user.js as primary source
 const SOURCES: SourceConfig[] = [
   {
-    name: "arkenfox",
-    url: "https://raw.githubusercontent.com/arkenfox/user.js/master/user.js",
-    category: "arkenfox",
-    enabled: true,
-  },
-  {
-    name: "Betterfox-Fastfox",
-    url: "https://raw.githubusercontent.com/yokoffing/Betterfox/main/Fastfox.js",
-    category: "betterfox",
-    enabled: true,
-  },
-  {
-    name: "Betterfox-Securefox",
-    url: "https://raw.githubusercontent.com/yokoffing/Betterfox/main/Securefox.js",
-    category: "betterfox",
-    enabled: true,
-  },
-  {
-    name: "Betterfox-Peskyfox",
-    url: "https://raw.githubusercontent.com/yokoffing/Betterfox/main/Peskyfox.js",
-    category: "betterfox",
-    enabled: true,
-  },
-  {
-    name: "Betterfox-Smoothfox",
-    url: "https://raw.githubusercontent.com/yokoffing/Betterfox/main/Smoothfox.js",
-    category: "betterfox",
+    name: "Custom-UserJS",
+    url: "https://raw.githubusercontent.com/arg9244/dotfiles/refs/heads/main/dot_config/private_mozilla/private_firefox/private_x4ly4jil.default-nightly/user.js",
+    category: "custom",
     enabled: true,
   },
 ];
@@ -105,43 +82,31 @@ export async function fetchAllPreferences(forceRefresh = false): Promise<FetchRe
     }
   }
 
-  console.log("[Fetcher] Fetching preferences from sources...");
+  console.log("[Fetcher] Fetching preferences from custom user.js source...");
 
-  const results = await Promise.all(
-    SOURCES.filter((s) => s.enabled).map(fetchAndParseSource)
-  );
-
-  const allPreferences: ParsedPreference[] = [];
   const errors: string[] = [];
-  const sources: string[] = [];
+  let preferences: ParsedPreference[] = [];
 
-  for (const result of results) {
-    allPreferences.push(...result.preferences);
-    if (result.error) {
-      errors.push(result.error);
-    }
+  try {
+    // Fetch and parse the custom user.js file
+    preferences = await fetchCustomUserJs();
+    console.log(`[Fetcher] Loaded ${preferences.length} preferences from custom user.js`);
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : "Unknown error";
+    errors.push(`Failed to fetch custom user.js: ${errorMsg}`);
+    console.error("[Fetcher] Error fetching custom user.js:", error);
   }
 
-  // Merge and deduplicate
-  const merged = mergeParsedFiles(
-    SOURCES.filter((s) => s.enabled).map((s, i) => ({
-      source: s.name,
-      preferences: results[i].preferences,
-      sections: [],
-    }))
-  );
-
   const fetchResult: FetchResult = {
-    preferences: merged,
+    preferences,
     lastUpdated: Date.now(),
-    sources: SOURCES.filter((s) => s.enabled).map((s) => s.name),
+    sources: ["Custom-UserJS"],
     errors,
   };
 
   // Save to cache
   saveToCache(fetchResult);
 
-  console.log(`[Fetcher] Loaded ${merged.length} preferences from ${sources.length} sources`);
   if (errors.length > 0) {
     console.warn("[Fetcher] Errors:", errors);
   }

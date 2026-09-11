@@ -55,8 +55,11 @@ export default function App() {
   const [showPresets, setShowPresets] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cssFileInputRef = useRef<HTMLInputElement>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loadSuccess, setLoadSuccess] = useState<string | null>(null);
+  const [loadedUserChrome, setLoadedUserChrome] = useState<string | null>(null);
+  const [loadedUserContent, setLoadedUserContent] = useState<string | null>(null);
 
   const {
     categories,
@@ -170,6 +173,36 @@ export default function App() {
     }
   };
 
+  const handleCSSFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLoadError(null);
+    setLoadSuccess(null);
+
+    try {
+      const content = await file.text();
+      const fileName = file.name.toLowerCase();
+      
+      if (fileName.includes('userchrome')) {
+        setLoadedUserChrome(content);
+        setLoadSuccess(`Successfully loaded userChrome.css (${(content.length / 1024).toFixed(1)} KB)`);
+      } else if (fileName.includes('usercontent')) {
+        setLoadedUserContent(content);
+        setLoadSuccess(`Successfully loaded userContent.css (${(content.length / 1024).toFixed(1)} KB)`);
+      } else {
+        setLoadError('File must be named userChrome.css or userContent.css');
+      }
+
+      // Clear the file input so the same file can be loaded again
+      if (cssFileInputRef.current) {
+        cssFileInputRef.current.value = "";
+      }
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Failed to load CSS file");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#1e1e2e] text-[#cdd6f4]">
       {/* Header */}
@@ -208,6 +241,21 @@ export default function App() {
                 type="file"
                 accept=".js,.txt"
                 onChange={handleFileUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => cssFileInputRef.current?.click()}
+                className="p-2 text-[#6c7086] hover:text-[#cdd6f4] transition-colors cursor-pointer"
+                title="Load userChrome.css or userContent.css"
+              >
+                <Paintbrush className="w-4 h-4" />
+              </button>
+              <input
+                ref={cssFileInputRef}
+                type="file"
+                accept=".css"
+                onChange={handleCSSFileUpload}
                 className="hidden"
               />
               <button
@@ -314,6 +362,44 @@ export default function App() {
             <span className="text-sm text-[#cdd6f4]">
               Loaded from: <code className="text-[#89b4fa]">{loadedFileName}</code>
             </span>
+          </div>
+        )}
+
+        {/* Loaded CSS Files Indicators */}
+        {(loadedUserChrome || loadedUserContent) && (
+          <div className="mb-6 flex flex-wrap gap-3">
+            {loadedUserChrome && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-[#313244] border border-[#45475a] rounded-lg">
+                <Paintbrush className="w-4 h-4 text-[#cba6f7]" />
+                <span className="text-sm text-[#cdd6f4]">
+                  userChrome.css loaded <span className="text-[#6c7086]">({(loadedUserChrome.length / 1024).toFixed(1)} KB)</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setLoadedUserChrome(null)}
+                  className="ml-2 text-[#6c7086] hover:text-[#f38ba8] transition-colors cursor-pointer"
+                  title="Remove loaded file"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            {loadedUserContent && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-[#313244] border border-[#45475a] rounded-lg">
+                <Globe className="w-4 h-4 text-[#94e2d5]" />
+                <span className="text-sm text-[#cdd6f4]">
+                  userContent.css loaded <span className="text-[#6c7086]">({(loadedUserContent.length / 1024).toFixed(1)} KB)</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setLoadedUserContent(null)}
+                  className="ml-2 text-[#6c7086] hover:text-[#f38ba8] transition-colors cursor-pointer"
+                  title="Remove loaded file"
+                >
+                  ×
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -511,6 +597,8 @@ export default function App() {
           categories={categories}
           selections={selections}
           customValues={customValues}
+          loadedUserChrome={loadedUserChrome}
+          loadedUserContent={loadedUserContent}
           onClose={() => setShowPreview(false)}
           onShowGuide={() => { setShowPreview(false); setShowGuide(true); }}
         />
