@@ -27,6 +27,7 @@ export interface UseDynamicPreferencesResult {
   togglePreference: (key: string) => void;
   setCustomValue: (key: string, value: boolean | number | string) => void;
   loadUserJs: (content: string, fileName: string) => { loaded: number; errors: string[] };
+  setCSSSelections: (cssSelections: Record<string, boolean>) => void;
   applyPreset: (presetId: string) => void;
   clearAll: () => void;
   selectAll: () => void;
@@ -87,7 +88,11 @@ function getCategoryKey(pref: ParsedPreference): string {
     key.startsWith("dns.") ||
     section.includes("network") ||
     section.includes("proxy") ||
-    section.includes("dns")
+    section.includes("dns") ||
+    key.includes("http.") ||
+    key.includes("tcp.") ||
+    key.includes("websocket") ||
+    key.includes("socket")
   ) {
     // But not network privacy settings
     if (!key.includes("predictor") && !key.includes("prefetch") && !key.includes("speculative")) {
@@ -102,7 +107,10 @@ function getCategoryKey(pref: ParsedPreference): string {
     key.startsWith("pdfjs") ||
     section.includes("media") ||
     section.includes("download") ||
-    section.includes("pdf")
+    section.includes("pdf") ||
+    key.includes("video") ||
+    key.includes("audio") ||
+    key.includes("autoplay")
   ) {
     return "media";
   }
@@ -111,7 +119,8 @@ function getCategoryKey(pref: ParsedPreference): string {
   if (
     key.startsWith("extensions.") ||
     section.includes("extension") ||
-    section.includes("addon")
+    section.includes("addon") ||
+    key.includes("webcompat")
   ) {
     return "extensions";
   }
@@ -123,6 +132,10 @@ function getCategoryKey(pref: ParsedPreference): string {
     key.includes("gfx.") ||
     key.includes("content.notify") ||
     key.includes("nglayout") ||
+    key.includes("layers.") ||
+    key.includes("webrender") ||
+    key.includes("canvas") ||
+    key.includes("image.mem") ||
     (key.includes("cache") && !key.startsWith("network.") && !key.startsWith("media."))
   ) {
     return "performance";
@@ -138,7 +151,8 @@ function getCategoryKey(pref: ParsedPreference): string {
     key.includes("datareporting") ||
     key.includes("breakpad") ||
     key.includes("normandy") ||
-    key.includes("shield")
+    key.includes("shield") ||
+    key.includes("report")
   ) {
     return "telemetry";
   }
@@ -156,7 +170,17 @@ function getCategoryKey(pref: ParsedPreference): string {
     key.includes("browser.about") ||
     key.includes("browser.discovery") ||
     key.includes("extensions.getAddons") ||
-    key.includes("browser.preferences")
+    key.includes("browser.preferences") ||
+    key.includes("browser.tabs") ||
+    key.includes("browser.bookmarks") ||
+    key.includes("browser.toolbars") ||
+    key.includes("browser.chrome") ||
+    key.includes("browser.compactmode") ||
+    key.includes("browser.privateWindowSeparation") ||
+    key.includes("browser.profiles") ||
+    key.includes("findbar") ||
+    key.includes("view_source") ||
+    key.includes("full-screen-api")
   ) {
     return "ui";
   }
@@ -174,7 +198,13 @@ function getCategoryKey(pref: ParsedPreference): string {
     key.includes("tracking") ||
     key.includes("safebrowsing") ||
     key.includes("https_only") ||
-    key.includes("dom.security")
+    key.includes("dom.security") ||
+    key.includes("dom.block") ||
+    key.includes("dom.disable") ||
+    key.includes("dom.popup") ||
+    key.includes("permissions.") ||
+    key.includes("geo.") ||
+    key.includes("captivedetect")
   ) {
     return "security";
   }
@@ -187,9 +217,80 @@ function getCategoryKey(pref: ParsedPreference): string {
     key.includes("resistfingerprint") ||
     key.includes("partition") ||
     key.includes("purge_trackers") ||
-    key.includes("query_stripping")
+    key.includes("query_stripping") ||
+    key.includes("bounce") ||
+    key.includes("beacon")
   ) {
     return "privacy";
+  }
+
+  // Session & History
+  if (
+    key.includes("session") ||
+    key.includes("history") ||
+    key.includes("places.") ||
+    key.includes("browser.sessionstore") ||
+    key.includes("browser.startup") ||
+    key.includes("browser.helperApps")
+  ) {
+    return "ui";
+  }
+
+  // Search & Forms
+  if (
+    key.includes("search") ||
+    key.includes("formfill") ||
+    key.includes("signon") ||
+    key.includes("editor.")
+  ) {
+    return "ui";
+  }
+
+  // Accessibility
+  if (
+    key.includes("accessibility") ||
+    section.includes("accessibility")
+  ) {
+    return "ui";
+  }
+
+  // DOM & JavaScript
+  if (
+    key.startsWith("dom.") ||
+    key.startsWith("javascript.") ||
+    section.includes("dom") ||
+    section.includes("javascript")
+  ) {
+    return "security";
+  }
+
+  // Layout & Rendering
+  if (
+    key.startsWith("layout.") ||
+    key.includes("font") ||
+    key.includes("scroll") ||
+    key.includes("apz.")
+  ) {
+    return "performance";
+  }
+
+  // Widget & Platform
+  if (
+    key.startsWith("widget.") ||
+    key.startsWith("ui.") ||
+    section.includes("widget") ||
+    section.includes("platform")
+  ) {
+    return "ui";
+  }
+
+  // DevTools
+  if (
+    key.startsWith("devtools.") ||
+    section.includes("devtools") ||
+    section.includes("debugger")
+  ) {
+    return "ui";
   }
 
   return "other";
@@ -377,6 +478,10 @@ export function useDynamicPreferences(): UseDynamicPreferencesResult {
     return Object.values(selections).filter(Boolean).length;
   }, [selections]);
 
+  const setCSSSelections = useCallback((cssSelections: Record<string, boolean>) => {
+    setSelections((prev) => ({ ...prev, ...cssSelections }));
+  }, []);
+
   return {
     categories,
     selections,
@@ -388,6 +493,7 @@ export function useDynamicPreferences(): UseDynamicPreferencesResult {
     togglePreference,
     setCustomValue,
     loadUserJs,
+    setCSSSelections,
     applyPreset,
     clearAll,
     selectAll,

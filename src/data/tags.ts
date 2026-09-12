@@ -21,7 +21,8 @@ export type TagType =
   | "performance"
   | "telemetry"
   | "experimental"
-  | "personal-preference";
+  | "personal-preference"
+  | "ui";
 
 export interface Tag {
   id: TagType;
@@ -144,6 +145,12 @@ export const TAGS: Record<TagType, Tag> = {
     label: "Personal Preference",
     color: "green",
     description: "Subjective preference that varies by user needs and workflow"
+  },
+  "ui": {
+    id: "ui",
+    label: "UI/UX",
+    color: "green",
+    description: "User interface and user experience customization"
   }
 };
 
@@ -429,7 +436,111 @@ export const PREFERENCE_TAGS: Record<string, TagType[]> = {
   "browser.newtab.preload": ["performance", "safe"],
   "browser.sessionstore.restore_on_demand": ["performance", "reduce-ram", "safe"],
   "browser.sessionstore.restore_tabs_lazily": ["performance", "reduce-ram", "safe"],
-  "extensions.webcompat.enable_shims": ["safe"]
+  "extensions.webcompat.enable_shims": ["safe"],
+
+  // ============ SESSION & HISTORY ============
+  "browser.sessionstore.max_tabs_undo": ["ui", "safe", "personal-preference"],
+  "browser.sessionstore.max_windows_undo": ["ui", "safe", "personal-preference"],
+  "browser.sessionstore.resume_from_crash": ["ui", "safe", "recommended"],
+  "browser.startup.homepage": ["ui", "safe", "personal-preference"],
+  "browser.startup.page": ["ui", "safe", "personal-preference"],
+  "places.history.enabled": ["privacy", "safe", "personal-preference"],
+  "places.history.expiration.max_pages": ["privacy", "reduce-disk-wear", "safe"],
+
+  // ============ SEARCH & FORMS ============
+  "browser.search.defaultenginename": ["ui", "safe", "personal-preference"],
+  "browser.search.order.1": ["ui", "safe", "personal-preference"],
+  "browser.search.order.2": ["ui", "safe", "personal-preference"],
+  "browser.search.order.3": ["ui", "safe", "personal-preference"],
+  "signon.rememberSignons": ["privacy", "safe", "personal-preference"],
+  "signon.autofillForms": ["privacy", "safe", "personal-preference"],
+
+  // ============ TABS & WINDOWS ============
+  "browser.tabs.loadBookmarksInTabs": ["ui", "safe", "personal-preference"],
+  "browser.tabs.tabMinWidth": ["ui", "safe", "personal-preference"],
+  "browser.tabs.tabMaxWidth": ["ui", "safe", "personal-preference"],
+  "browser.tabs.tabClipWidth": ["ui", "safe", "personal-preference"],
+  "browser.tabs.closeWindowWithLastTab": ["ui", "safe", "personal-preference"],
+  "browser.tabs.warnOnClose": ["ui", "safe", "personal-preference"],
+  "browser.tabs.warnOnOpen": ["ui", "safe", "personal-preference"],
+  "browser.link.open_newwindow": ["ui", "safe", "personal-preference"],
+  "browser.link.open_newwindow.restriction": ["ui", "safe", "personal-preference"],
+
+  // ============ ACCESSIBILITY ============
+  "accessibility.typeaheadfind": ["ui", "safe", "personal-preference"],
+  "accessibility.typeaheadfind.timeout": ["ui", "safe", "personal-preference"],
+
+  // ============ DOM & JAVASCRIPT ============
+  "dom.image-lazy-loading.enabled": ["performance", "increase-network-speed", "safe"],
+  "dom.indexedDB.preprocessing": ["performance", "safe"],
+  "dom.enable_resource_timing": ["privacy", "tracking", "safe"],
+
+  // ============ LAYOUT & RENDERING ============
+  "layout.spellcheckDefault": ["ui", "reduce-cpu", "safe", "personal-preference"],
+  "layout.css.font-visibility.standard": ["privacy", "safe"],
+  "layout.css.font-visibility.trackingprotection": ["privacy", "safe"],
+  "general.smoothScroll": ["ui", "safe", "personal-preference"],
+  "general.smoothScroll.mouseWheel.durationMinMS": ["ui", "safe", "personal-preference"],
+  "general.smoothScroll.currentVelocityWeighting": ["ui", "safe", "personal-preference"],
+  "general.smoothScroll.stopDecelerationWeighting": ["ui", "safe", "personal-preference"],
+  "general.smoothScroll.msdPhysics.enabled": ["ui", "safe", "personal-preference"],
+  "mousewheel.min_line_scroll_amount": ["ui", "safe", "personal-preference"],
+  "mousewheel.default.delta_multiplier_y": ["ui", "safe", "personal-preference"],
+  "apz.overscroll.enabled": ["ui", "safe", "personal-preference"],
+  "apz.frame_delay.enabled": ["performance", "safe"],
+
+  // ============ WIDGET & PLATFORM ============
+  "widget.use-xdg-desktop-portal.file-picker": ["ui", "safe", "personal-preference"],
+  "widget.wayland.fractional-scale.enabled": ["ui", "safe", "personal-preference"],
+  "widget.wayland.opaque-region.enabled": ["performance", "safe"],
+  "widget.wayland.cursor-spec-enabled": ["ui", "safe", "personal-preference"],
+  "widget.non-native-theme.use-theme-accent": ["ui", "safe", "personal-preference"],
+  "ui.key.menuAccessKeyFocuses": ["ui", "safe", "personal-preference"],
+
+  // ============ DEVTOOLS ============
+  "devtools.chrome.enabled": ["ui", "safe", "personal-preference"],
+  "devtools.debugger.remote-enabled": ["security", "warning", "personal-preference"],
+  "devtools.theme": ["ui", "safe", "personal-preference"],
+
+  // ============ FONTS ============
+  "font.name.serif.x-western": ["ui", "safe", "personal-preference"],
+  "font.name.sans-serif.x-western": ["ui", "safe", "personal-preference"],
+  "font.name.monospace.x-western": ["ui", "safe", "personal-preference"],
+  "font.size.variable.x-western": ["ui", "safe", "personal-preference"],
+  "font.size.fixed.x-western": ["ui", "safe", "personal-preference"],
+  "browser.display.use_document_fonts": ["ui", "safe", "personal-preference"],
+
+  // ============ PRINTING ============
+  "print.printer_Mozilla_Save_to_PDF.print_to_file": ["ui", "safe", "personal-preference"],
+  "print.save_print_settings": ["ui", "safe", "personal-preference"],
+
+  // ============ SPELL CHECKING ============
+  "spellchecker.dictionary": ["ui", "safe", "personal-preference"],
+
+  // ============ COOKIES ============
+  "network.cookie.lifetimePolicy": ["privacy", "safe", "personal-preference"],
+  "network.cookie.lifetime.days": ["privacy", "safe", "personal-preference"],
+
+  // ============ CACHE ============
+  "browser.cache.offline.enable": ["performance", "safe"],
+  "browser.cache.offline.capacity": ["performance", "safe"],
+
+  // ============ BOOKMARKS ============
+  "browser.bookmarks.autoExportHTML": ["ui", "safe", "personal-preference"],
+  "browser.bookmarks.file": ["ui", "safe", "personal-preference"],
+
+  // ============ ZOOM ============
+  "browser.zoom.full": ["ui", "safe", "personal-preference"],
+  "zoom.minPercent": ["ui", "safe", "personal-preference"],
+  "zoom.maxPercent": ["ui", "safe", "personal-preference"],
+
+  // ============ GENERAL ============
+  "general.useragent.override": ["privacy", "warning", "personal-preference"],
+  "general.warnOnAboutConfig": ["ui", "safe"],
+  "general.autoScroll": ["ui", "safe", "personal-preference"],
+
+  // ============ VIEW SOURCE ============
+  "view_source.wrap_long_lines": ["ui", "safe", "personal-preference"]
 };
 
 /**

@@ -29,6 +29,7 @@ import { CSSOptionCard } from "./components/CSSOptionCard";
 import { PresetSelector } from "./components/PresetSelector";
 import { PreviewModal } from "./components/PreviewModal";
 import { SetupGuide } from "./components/SetupGuide";
+import { parseCSSAndMatchOptions, getMatchedCSSCount } from "./utils/cssParser";
 
 type TabId = string;
 
@@ -72,6 +73,7 @@ export default function App() {
     togglePreference,
     setCustomValue,
     loadUserJs,
+    setCSSSelections,
     applyPreset,
     clearAll,
     selectAll,
@@ -186,10 +188,18 @@ export default function App() {
       
       if (fileName.includes('userchrome')) {
         setLoadedUserChrome(content);
-        setLoadSuccess(`Successfully loaded userChrome.css (${(content.length / 1024).toFixed(1)} KB)`);
+        // Parse CSS and match to predefined options
+        const cssSelections = parseCSSAndMatchOptions(content, "userChrome");
+        const matchedCount = getMatchedCSSCount(cssSelections);
+        setCSSSelections(cssSelections);
+        setLoadSuccess(`Successfully loaded userChrome.css (${(content.length / 1024).toFixed(1)} KB) - ${matchedCount} options matched`);
       } else if (fileName.includes('usercontent')) {
         setLoadedUserContent(content);
-        setLoadSuccess(`Successfully loaded userContent.css (${(content.length / 1024).toFixed(1)} KB)`);
+        // Parse CSS and match to predefined options
+        const cssSelections = parseCSSAndMatchOptions(content, "userContent");
+        const matchedCount = getMatchedCSSCount(cssSelections);
+        setCSSSelections(cssSelections);
+        setLoadSuccess(`Successfully loaded userContent.css (${(content.length / 1024).toFixed(1)} KB) - ${matchedCount} options matched`);
       } else {
         setLoadError('File must be named userChrome.css or userContent.css');
       }
